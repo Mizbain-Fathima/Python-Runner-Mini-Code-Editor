@@ -28,8 +28,4 @@ COPY --from=build /app/build /usr/share/nginx/html
 EXPOSE 80
 
 # Start Nginx
-<<<<<<< HEAD
 CMD ["nginx", "-g", "daemon off;"]
-=======
-CMD ["nginx", "-g", "daemon off;"]
->>>>>>> 58dc120f89c474c7e9ea03122e20d31f80ab5a24
