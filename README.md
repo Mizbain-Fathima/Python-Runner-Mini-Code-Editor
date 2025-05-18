@@ -1,8 +1,3 @@
-Here's a fully generated and updated `README.md` file for the **Python Runner Mini Code Editor** project based on the contents of the linked GitHub repo:
-
----
-
-```markdown
 # 🐍 Python Runner Mini Code Editor
 
 A lightweight and interactive web-based Python code editor built using **React**, **Vite**, and **Tailwind CSS**. This tool enables users to write, edit, and execute Python code directly in the browser with real-time output display.
