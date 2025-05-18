@@ -100,10 +100,3 @@ This project is licensed under the [MIT License](LICENSE).
 
 Developed by [Mizbain Fathima](https://github.com/Mizbain-Fathima)
 Feel free to raise issues or open pull requests.
-
-```
-
----
-
-Let me know if you'd like this as a downloadable `.md` file or want to include screenshots or badges (e.g., GitHub stars, build status).
-```
