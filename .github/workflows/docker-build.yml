@@ -28,5 +28,5 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/python-runner-mini-code-editor:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/python-runner-mini-code-editor:cache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/python-runner-mini-code-editor:cache,mode=max
