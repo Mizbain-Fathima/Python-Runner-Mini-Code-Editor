@@ -3,29 +3,29 @@ FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or yarn.lock) first for caching
+# Copy package.json and lock file for caching
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy rest of the source code
+# Copy the rest of the code
 COPY . .
 
-# Build the React app for production
+# Build the React app
 RUN npm run build
 
-# Stage 2: Serve the app with a lightweight web server (nginx)
+# Stage 2: Serve the app with Nginx
 FROM nginx:alpine
 
-# Copy the build output from previous stage
+# Copy build output to nginx's web directory
 COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy custom nginx config if needed (optional)
+# Optional: Custom nginx config
 # COPY nginx.conf /etc/nginx/nginx.conf
 
 # Expose port 80
 EXPOSE 80
 
-# Start nginx server
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
