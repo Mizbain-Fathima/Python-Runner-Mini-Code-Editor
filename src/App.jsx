@@ -17,27 +17,31 @@ print("Hello, World!")`);
   }, [terminalLines]);
 
   async function runCode() {
-    setLoading(true);
-    setTerminalLines((lines) => [...lines, `> Input:\n${input || "(no input)"}`]);
-    try {
-      const response = await fetch("http://localhost:5000/run-python", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code, input }),
-      });
-      const data = await response.json();
-      setTerminalLines((lines) =>
-        [
-          ...lines,
-          data.output ? `> Output:\n${data.output}` : "> Output:\n(no output)",
-          data.error ? `Error:\n${data.error}` : null,
-        ].filter(Boolean)
-      );
-    } catch {
-      setTerminalLines((lines) => [...lines, "Error:\nError connecting to server"]);
-    }
-    setLoading(false);
+  setLoading(true);
+  setTerminalLines((lines) => [...lines, `> Input:\n${input || "(no input)"}`]);
+
+  try {
+    const response = await fetch("https://your-backend.onrender.com/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, input }),
+    });
+    const data = await response.json();
+
+    setTerminalLines((lines) =>
+      [
+        ...lines,
+        data.output ? `> Output:\n${data.output}` : "> Output:\n(no output)",
+        data.error ? `Error:\n${data.error}` : null,
+      ].filter(Boolean)
+    );
+  } catch {
+    setTerminalLines((lines) => [...lines, "Error:\nError connecting to server"]);
   }
+
+  setLoading(false);
+}
+
 
   return (
     <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center p-6">
