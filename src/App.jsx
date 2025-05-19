@@ -21,7 +21,7 @@ print("Hello, World!")`);
   setTerminalLines((lines) => [...lines, `> Input:\n${input || "(no input)"}`]);
 
   try {
-    const response = await fetch("https://python-runner-mini-code-editor-1.onrender.com/run-python", {
+    const response = await fetch("https://python-runner-mini-code-editor-1.onrender.com/run", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code, input }),
