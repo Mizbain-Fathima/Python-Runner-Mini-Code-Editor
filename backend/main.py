@@ -8,11 +8,15 @@ app = FastAPI()
 # ✅ Add CORS Middleware for frontend to communicate
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # or limit to your frontend domain
+    allow_origins=[
+        "https://python-runner-mini-code-editor.onrender.com",
+        "http://localhost:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 class CodeRequest(BaseModel):
     code: str
@@ -22,7 +26,7 @@ class CodeRequest(BaseModel):
 def run_code(request: CodeRequest):
     try:
         process = subprocess.Popen(
-            ["python3", "-c", request.code],
+            ["python", "-c", request.code],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,

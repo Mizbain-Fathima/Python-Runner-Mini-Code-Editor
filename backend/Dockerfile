@@ -1,42 +1,11 @@
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-import subprocess
+# backend/Dockerfile
+FROM python:3.10-slim
 
-app = FastAPI()
+WORKDIR /app
 
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-@app.post("/run")
-async def run_code(request: Request):
-    body = await request.json()
-    code = body.get("code", "")
-    user_input = body.get("input", "")
+COPY . .
 
-    try:
-        # Save code to file
-        with open("script.py", "w") as f:
-            f.write(code)
-
-        # Run the code with input
-        result = subprocess.run(
-            ["python", "script.py"],
-            input=user_input,
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-
-        return {
-            "output": result.stdout.strip(),
-            "error": result.stderr.strip(),
-        }
-
-    except subprocess.TimeoutExpired:
-        return {"output": "", "error": "Execution timed out"}
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
