@@ -5,18 +5,16 @@ import subprocess
 
 app = FastAPI()
 
-# ✅ Add CORS Middleware for frontend to communicate
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://python-runner-mini-code-editor.onrender.com",
+        "https://python-runner-frontend.onrender.com",  # <-- Use your actual frontend URL
         "http://localhost:3000"
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 class CodeRequest(BaseModel):
     code: str
@@ -36,3 +34,11 @@ def run_code(request: CodeRequest):
         return {"output": stdout, "error": stderr}
     except subprocess.TimeoutExpired:
         return {"output": "", "error": "Execution timed out"}
+
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
+
+@app.get("/")
+def root():
+    return {"message": "Backend is running!"}
