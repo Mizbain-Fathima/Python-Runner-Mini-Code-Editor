@@ -58,160 +58,114 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-slate-900 to-blue-950 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-100 py-6">
       {/* Header */}
-      <header className="flex flex-col items-center mb-8">
-        <div className="flex items-center gap-3">
-          <img
-            src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
-            alt="Python"
-            className="w-12 h-12 drop-shadow-lg"
-          />
-          <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
-            Mini Code Editor
+      <header className="bg-white shadow-md py-4">
+        <div className="container mx-auto px-4">
+          <h1 className="text-2xl font-semibold text-gray-800">
+            Python Code Runner
           </h1>
+          <p className="text-gray-500 text-sm">
+            Write and run Python code in your browser.
+          </p>
         </div>
-        <p className="mt-2 text-lg text-blue-200 font-medium tracking-wide">
-          <span className="font-semibold text-yellow-300">Python Runner</span> - Write, test, and debug Python code instantly!
-        </p>
       </header>
 
-      {/* Main Card */}
-      <div className="w-full max-w-4xl bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl border border-blue-700 p-6 md:p-10 flex flex-col gap-6">
+      {/* Main Content */}
+      <main className="container mx-auto mt-6 px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Editor */}
-        <div>
-          <label className="block text-blue-200 font-semibold mb-2 text-lg">
-            Python Code
-          </label>
-          <div className="rounded-lg overflow-hidden border-2 border-blue-800 shadow-lg">
-            <Editor
-              height="35vh"
-              defaultLanguage="python"
-              theme="vs-dark"
-              value={code}
-              onChange={(value) => setCode(value)}
-              options={{
-                lineNumbers: "on",
-                minimap: { enabled: false },
-                fontSize: 15,
-                fontFamily: "Fira Mono, monospace",
-                smoothScrolling: true,
-                scrollBeyondLastLine: false,
-                padding: { top: 12 },
-              }}
-              className="w-full"
-            />
+        <section className="bg-white shadow rounded-lg p-4">
+          <h2 className="text-lg font-semibold text-gray-700 mb-2">
+            Code Editor
+          </h2>
+          <Editor
+            height="40vh"
+            defaultLanguage="python"
+            theme="light"
+            value={code}
+            onChange={(value) => setCode(value)}
+            options={{
+              lineNumbers: "on",
+              minimap: { enabled: false },
+              fontSize: 14,
+            }}
+            className="border rounded"
+          />
+        </section>
+
+        {/* Input and Terminal */}
+        <section className="bg-white shadow rounded-lg p-4">
+          <h2 className="text-lg font-semibold text-gray-700 mb-2">
+            Input and Output
+          </h2>
+
+          {/* Input Toggle */}
+          <div className="mb-3">
+            <button
+              onClick={() => setShowInput(!showInput)}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded"
+            >
+              {showInput ? "Hide Input" : "Show Input"}
+            </button>
+            {showInput && (
+              <textarea
+                className="w-full h-24 p-2 border rounded mt-2 text-sm"
+                placeholder="Standard input (stdin)"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+            )}
           </div>
-        </div>
 
-        {/* Input Toggle & Input Area */}
-        <div>
-          <button
-            onClick={() => setShowInput((v) => !v)}
-            className={`transition-all px-5 py-2 rounded-lg font-semibold shadow-sm border-2 ${
-              showInput
-                ? "bg-blue-900 border-blue-400 text-yellow-300"
-                : "bg-slate-800 border-slate-600 text-blue-200 hover:bg-blue-900 hover:text-yellow-300"
-            }`}
+          {/* Terminal */}
+          <div
+            ref={terminalRef}
+            className="bg-gray-50 p-3 rounded overflow-y-auto h-48 border text-sm"
           >
-            {showInput ? "Hide Input" : "Show Input"}
-          </button>
-          {showInput && (
-            <textarea
-              className="mt-3 w-full bg-slate-900 text-blue-200 rounded-lg p-3 font-mono border-2 border-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-              placeholder="Standard input (stdin)"
-              rows={3}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-          )}
-        </div>
+            {terminalLines.length === 0 ? (
+              <p className="text-gray-400 italic">
+                Terminal is empty. Run code to see output.
+              </p>
+            ) : (
+              terminalLines.map((line, i) => (
+                <pre key={i} className="whitespace-pre-wrap">
+                  {line}
+                </pre>
+              ))
+            )}
+          </div>
+        </section>
+      </main>
 
-        {/* Buttons */}
-        <div className="flex flex-wrap gap-4 justify-center">
+      {/* Buttons */}
+      <footer className="container mx-auto mt-4 px-4">
+        <div className="flex justify-end gap-2">
           <button
             onClick={runCode}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2 rounded-lg font-bold bg-gradient-to-r from-blue-700 to-indigo-700 text-white shadow-lg hover:from-blue-600 hover:to-indigo-600 transition-all focus:ring-2 focus:ring-yellow-300 disabled:opacity-60"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
           >
             {loading ? (
               <>
-                <svg
-                  className="animate-spin h-5 w-5 text-yellow-300"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  />
-                </svg>
                 Running...
               </>
             ) : (
-              <>
-                <span className="material-icons">play_arrow</span>
-                Run Code
-              </>
+              "Run Code"
             )}
           </button>
           <button
             onClick={clearTerminal}
-            className="px-6 py-2 rounded-lg font-bold bg-slate-800 text-blue-200 hover:bg-blue-900 hover:text-yellow-300 shadow transition"
+            className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded"
           >
             Clear Terminal
           </button>
           <button
             onClick={copyTerminal}
-            className="px-6 py-2 rounded-lg font-bold bg-yellow-300 text-blue-900 hover:bg-yellow-400 shadow transition"
+            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
           >
             Copy Output
           </button>
         </div>
-
-        {/* Terminal Output */}
-        <div
-          ref={terminalRef}
-          className="mt-6 bg-black/90 rounded-lg border-2 border-blue-800 p-4 h-56 md:h-64 overflow-y-auto font-mono text-base shadow-inner"
-        >
-          {terminalLines.length === 0 ? (
-            <p className="text-gray-400 italic">
-              Terminal is empty. Run code to see output.
-            </p>
-          ) : (
-            terminalLines.map((line, i) => (
-              <pre
-                key={i}
-                className={
-                  line.startsWith("Error")
-                    ? "text-red-400 bg-red-900/40 rounded px-2 py-1 mb-1"
-                    : line.startsWith("> Input")
-                    ? "text-yellow-300"
-                    : line.startsWith("> Output")
-                    ? "text-green-400"
-                    : "text-blue-100"
-                }
-              >
-                {line}
-              </pre>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="mt-8 text-blue-200 text-sm opacity-70">
-        Made with <span className="text-yellow-300">Python</span> &amp; <span className="text-blue-400">React</span> | Internship Assignment
       </footer>
     </div>
   );
