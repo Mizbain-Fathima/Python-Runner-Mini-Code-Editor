@@ -58,115 +58,131 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 py-6">
-      {/* Header */}
-      <header className="bg-white shadow-md py-4">
-        <div className="container mx-auto px-4">
-          <h1 className="text-2xl font-semibold text-gray-800">
-            Python Code Runner
-          </h1>
-          <p className="text-gray-500 text-sm">
-            Write and run Python code in your browser.
-          </p>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto mt-6 px-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Editor */}
-        <section className="bg-white shadow rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">
-            Code Editor
-          </h2>
-          <Editor
-            height="40vh"
-            defaultLanguage="python"
-            theme="light"
-            value={code}
-            onChange={(value) => setCode(value)}
-            options={{
-              lineNumbers: "on",
-              minimap: { enabled: false },
-              fontSize: 14,
-            }}
-            className="border rounded"
-          />
-        </section>
-
-        {/* Input and Terminal */}
-        <section className="bg-white shadow rounded-lg p-4">
-          <h2 className="text-lg font-semibold text-gray-700 mb-2">
-            Input and Output
-          </h2>
-
-          {/* Input Toggle */}
-          <div className="mb-3">
+    <div className="min-h-screen bg-gray-950 text-white flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-6xl flex flex-col gap-6 text-center px-2">
+        <h1 className="text-4xl font-extrabold text-white mb-2">
+          🐍 Mini Code Editor - Python Runner
+        </h1>
+        <div className="w-full flex flex-col md:flex-row gap-6">
+          {/* Left: Editor and Input */}
+          <div className="flex-1 flex flex-col gap-4">
+            <div className="w-full flex justify-center">
+              <Editor
+                height="40vh"
+                defaultLanguage="python"
+                theme="vs-dark"
+                value={code}
+                onChange={(value) => setCode(value)}
+                options={{
+                  lineNumbers: "on",
+                  minimap: { enabled: false },
+                  fontSize: 14,
+                }}
+                className="w-full"
+              />
+            </div>
             <button
               onClick={() => setShowInput(!showInput)}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded"
+              className="px-6 py-2 rounded font-semibold disabled:opacity-50 flex items-center gap-2 text-white"
+              style={{ backgroundColor: "#191970" }}
             >
               {showInput ? "Hide Input" : "Show Input"}
             </button>
             {showInput && (
               <textarea
-                className="w-full h-24 p-2 border rounded mt-2 text-sm"
+                className="bg-gray-800 p-3 rounded w-full font-mono text-white"
                 placeholder="Standard input (stdin)"
+                rows={4}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
               />
             )}
           </div>
-
-          {/* Terminal */}
-          <div
-            ref={terminalRef}
-            className="bg-gray-50 p-3 rounded overflow-y-auto h-48 border text-sm"
-          >
-            {terminalLines.length === 0 ? (
-              <p className="text-gray-400 italic">
-                Terminal is empty. Run code to see output.
-              </p>
-            ) : (
-              terminalLines.map((line, i) => (
-                <pre key={i} className="whitespace-pre-wrap">
-                  {line}
-                </pre>
-              ))
-            )}
+          {/* Right: Terminal and Buttons */}
+          <div className="flex-1 flex flex-col gap-4">
+            {/* Buttons */}
+            <div className="flex flex-wrap justify-center gap-4">
+              <button
+                onClick={runCode}
+                disabled={loading}
+                className="px-6 py-2 rounded font-semibold disabled:opacity-50 flex items-center gap-2 text-white"
+                style={{ backgroundColor: "#191970" }}
+              >
+                {loading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      />
+                    </svg>
+                    Running...
+                  </>
+                ) : (
+                  "Run Code"
+                )}
+              </button>
+              <button
+                onClick={clearTerminal}
+                className="px-6 py-2 rounded font-semibold disabled:opacity-50 flex items-center gap-2 text-white"
+                style={{ backgroundColor: "#191970" }}
+              >
+                Clear Terminal
+              </button>
+              <button
+                onClick={copyTerminal}
+                className="px-6 py-2 rounded font-semibold disabled:opacity-50 flex items-center gap-2 text-white"
+                style={{ backgroundColor: "#191970" }}
+              >
+                Copy Terminal Output
+              </button>
+            </div>
+            {/* Terminal Output */}
+            <div
+              ref={terminalRef}
+              className="p-4 rounded font-mono h-64 overflow-y-auto whitespace-pre-wrap w-full mt-4 text-left border border-gray-700"
+              style={{ backgroundColor: "black", color: "white" }}
+            >
+              {terminalLines.length === 0 ? (
+                <p className="text-gray-500 italic">
+                  Terminal is empty. Run code to see output.
+                </p>
+              ) : (
+                terminalLines.map((line, i) => (
+                  <pre
+                    key={i}
+                    className={
+                      line.startsWith("Error")
+                        ? "text-red-500 bg-red-900 rounded p-1"
+                        : line.startsWith("> Input")
+                        ? "text-yellow-300"
+                        : line.startsWith("> Output")
+                        ? "text-green-400"
+                        : ""
+                    }
+                  >
+                    {line}
+                  </pre>
+                ))
+              )}
+            </div>
           </div>
-        </section>
-      </main>
-
-      {/* Buttons */}
-      <footer className="container mx-auto mt-4 px-4">
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={runCode}
-            disabled={loading}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                Running...
-              </>
-            ) : (
-              "Run Code"
-            )}
-          </button>
-          <button
-            onClick={clearTerminal}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-4 rounded"
-          >
-            Clear Terminal
-          </button>
-          <button
-            onClick={copyTerminal}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Copy Output
-          </button>
         </div>
-      </footer>
+      </div>
     </div>
   );
 }
