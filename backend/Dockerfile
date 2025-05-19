@@ -1,20 +1,42 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+import subprocess
 
-# Set the working directory
-WORKDIR /app
+app = FastAPI()
 
-# Copy the current directory contents into the container
-COPY . /app
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+@app.post("/run")
+async def run_code(request: Request):
+    body = await request.json()
+    code = body.get("code", "")
+    user_input = body.get("input", "")
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
+    try:
+        # Save code to file
+        with open("script.py", "w") as f:
+            f.write(code)
 
-# Define environment variable
-ENV PYTHONUNBUFFERED=1
+        # Run the code with input
+        result = subprocess.run(
+            ["python", "script.py"],
+            input=user_input,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
 
-# Run app.py when the container launches
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+        return {
+            "output": result.stdout.strip(),
+            "error": result.stderr.strip(),
+        }
+
+    except subprocess.TimeoutExpired:
+        return {"output": "", "error": "Execution timed out"}
